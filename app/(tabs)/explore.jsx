@@ -1,46 +1,36 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, RefreshControl, View, StyleSheet } from "react-native";
+import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 
 import { images } from "../../constants";
-import SearchInput from "../../components/SearchInput";
+
 import VideoCard from "../../components/VideoCard";
-
-
-const dummyData = [
-    {
-        id: "1",
-        title: "Movie 1",
-        thumbnail: images.thumbnail,
-        video: images.thumbnail,
-        creator: { username: "Director 1", avatar: images.profile },
-    },
-    {
-        id: "2",
-        title: "Movie 2",
-        thumbnail: images.thumbnail,
-        video: images.thumbnail,
-        creator: { username: "Director 2", avatar: images.profile },
-    },
-    // Add more dummy movies as needed
-];
+import EmptyState from "../../components/EmptyState";
+import SearchInput from "../../components/SearchInput";
 
 const Explore = () => {
+    //   const { data: posts, refetch } = useAppwrite(getAllPosts);
+    //   const { data: latestPosts } = useAppwrite(getLatestPosts);
+
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        // Simulate a network request
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 1000);
+        // await refetch();
+        setRefreshing(false);
     };
 
+    // one flatlist
+    // with list header
+    // and horizontal flatlist
+
+    //  we cannot do that with just scrollview as there's both horizontal and vertical scroll (two flat lists, within trending)
+
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView className="bg-primary">
             <FlatList
-                data={dummyData}
-                keyExtractor={(item) => item.id}
+                data={[]}
+                keyExtractor={(item) => item.$id}
                 renderItem={({ item }) => (
                     <VideoCard
                         title={item.title}
@@ -50,7 +40,42 @@ const Explore = () => {
                         avatar={item.creator.avatar}
                     />
                 )}
-                ListHeaderComponent={<SearchInput />}
+                ListHeaderComponent={() => (
+                    <View className="flex my-6 px-4 space-y-6">
+                        <View className="flex justify-between items-start flex-row mb-6">
+                            <View>
+                                <Text className="font-pmedium text-sm text-gray-100">
+                                    Welcome Back
+                                </Text>
+                                <Text className="text-2xl font-psemibold text-white">
+                                    JSMastery
+                                </Text>
+                            </View>
+
+                            <View className="mt-1.5">
+                                <Image
+                                    source={images.logoSmall}
+                                    className="w-9 h-10"
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        </View>
+
+                        <SearchInput />
+
+                        <View className="w-full flex-1 pt-5 pb-8">
+                            <Text className="text-lg font-pregular text-gray-100 mb-3">
+                                Latest Videos
+                            </Text>
+                        </View>
+                    </View>
+                )}
+                ListEmptyComponent={() => (
+                    <EmptyState
+                        title="No Results."
+
+                    />
+                )}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
@@ -58,12 +83,5 @@ const Explore = () => {
         </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#f0f0f0', // Replace with your desired background color
-    },
-});
 
 export default Explore;
