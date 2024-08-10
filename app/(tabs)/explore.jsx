@@ -1,43 +1,56 @@
-import { useState } from "react";
+
+import React, { useState, useEffect, useContext } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatList, Image, RefreshControl, Text, View } from "react-native";
-
 import { images } from "../../constants";
-
-import VideoCard from "../../components/VideoCard";
+import MovieCard from "../../components/MovieCard";
 import EmptyState from "../../components/EmptyState";
 import SearchInput from "../../components/SearchInput";
+import { TMDB_API_KEY } from "@env";
+import { BookmarksContext } from '../context/BookmarksContext';
+
+const TMDB_API_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}`;
 
 const Explore = () => {
-    //   const { data: posts, refetch } = useAppwrite(getAllPosts);
-    //   const { data: latestPosts } = useAppwrite(getLatestPosts);
-
+    const { bookmarks, addBookmark, removeBookmark } = useContext(BookmarksContext);
+    const [movies, setMovies] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState(null);
+
+    const fetchMovies = async () => {
+        try {
+            const response = await fetch(TMDB_API_URL);
+            const data = await response.json();
+            setMovies(data.results);
+        } catch (err) {
+            setError(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchMovies();
+    }, []);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        // await refetch();
+        await fetchMovies();
         setRefreshing(false);
     };
-
-    // one flatlist
-    // with list header
-    // and horizontal flatlist
-
-    //  we cannot do that with just scrollview as there's both horizontal and vertical scroll (two flat lists, within trending)
 
     return (
         <SafeAreaView className="bg-primary">
             <FlatList
-                data={[]}
-                keyExtractor={(item) => item.$id}
+                data={movies}
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                    <VideoCard
+                    <MovieCard
+                        key={item.id}
                         title={item.title}
-                        thumbnail={item.thumbnail}
-                        video={item.video}
-                        creator={item.creator.username}
-                        avatar={item.creator.avatar}
+                        thumbnail={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                        releaseYear={item.releaseYear}
+                        onFavorite={() => addBookmark(item.id, item.title, item.poster_path)}
+                        onUnfavorite={() => removeBookmark(item.id)}
+                        isFavorite={bookmarks.some(b => b.movieId === item.id)}
                     />
                 )}
                 ListHeaderComponent={() => (
@@ -73,7 +86,6 @@ const Explore = () => {
                 ListEmptyComponent={() => (
                     <EmptyState
                         title="No Results."
-
                     />
                 )}
                 refreshControl={
