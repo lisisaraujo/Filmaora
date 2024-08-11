@@ -28,21 +28,6 @@ const MovieCard = ({ title, releaseYear, thumbnail }) => {
                     <Image source={icons.bookmark} className="w-5 h-5" resizeMode="contain" />
                 </View>
             </View>
-
-            {/* {play ? (
-                <Video
-                    source={{ uri: video }}
-                    className="w-full h-60 rounded-xl mt-3"
-                    resizeMode={ResizeMode.CONTAIN}
-                    useNativeControls
-                    shouldPlay
-                    onPlaybackStatusUpdate={(status) => {
-                        if (status.didJustFinish) {
-                            setPlay(false);
-                        }
-                    }}
-                />
-            ) : ( */}
             <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setPlay(true)}
@@ -53,14 +38,7 @@ const MovieCard = ({ title, releaseYear, thumbnail }) => {
                     className="w-full h-full rounded-xl mt-3"
                     resizeMode="cover"
                 />
-                {/* 
-                <Image
-                    source={icons.play}
-                    className="w-12 h-12 absolute"
-                    resizeMode="contain"
-                /> */}
             </TouchableOpacity>
-            {/* )} */}
         </View>
     );
 };

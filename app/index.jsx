@@ -3,7 +3,7 @@ import { Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView, AppRegistry } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton"
-import { images } from "../constants";
+import { icons, images } from "../constants";
 
 
 export default function App() {
@@ -18,29 +18,17 @@ export default function App() {
         >
           <View className="w-full flex justify-center items-center min-h-[85vh] px-4">
             <Image
-              source={images.logo}
+              source={images.logoSmall}
               className="w-[130px] h-[84px]"
               resizeMode="contain"
             />
+            <Text className="text-secondary-200 text-5xl font-bold text-center">Filmaora{"\n"}</Text>
 
-            <Image
-              source={images.cards}
-              className="max-w-[380px] w-full h-[298px]"
-              resizeMode="contain"
-            />
 
             <View className="relative mt-5">
               <Text className="text-3xl text-white font-bold text-center">
-                Discover Endless{"\n"}
-                Possibilities with{" "}
-                <Text className="text-secondary-200">Filmaora</Text>
+                Your global streaming guide.{" "}
               </Text>
-
-              <Image
-                source={images.path}
-                className="w-[136px] h-[15px] absolute -bottom-2 -right-8"
-                resizeMode="contain"
-              />
             </View>
 
             <CustomButton
