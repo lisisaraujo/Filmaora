@@ -1,23 +1,44 @@
-
-import React, { useContext } from 'react';
-import { SafeAreaView, FlatList } from 'react-native';
-import MovieCard from '../../components/MovieCard';
-import { BookmarksContext } from '../context/BookmarksContext';
+import React, { useContext } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, Text, View } from "react-native";
+import MovieCard from "../../components/MovieCard";
+import EmptyState from "../../components/EmptyState";
+import SearchInput from "../../components/SearchInput";
+import { BookmarksContext } from "../context/BookmarksContext";
 
 const Bookmark = () => {
-    const { bookmarks, removeBookmark } = useContext(BookmarksContext);
+    const { bookmarkedMovies } = useContext(BookmarksContext);
 
     return (
-        <SafeAreaView>
+        <SafeAreaView className="bg-primary h-full">
             <FlatList
-                data={bookmarks}
+                data={bookmarkedMovies}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <MovieCard
+                        id={item.id}
                         title={item.title}
-                        thumbnail={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
-                        onUnfavorite={() => removeBookmark(item.movieId)}
-                        isFavorite={true}
+                        releaseYear={item.releaseYear}
+                        thumbnail={item.thumbnail}
+                    />
+                )}
+                ListHeaderComponent={() => (
+                    <View className="flex my-6 px-4 space-y-6">
+                        <View className="flex justify-between items-start flex-row mb-6">
+                            <View>
+                                <Text className="text-2xl font-psemibold text-white">
+                                    Your Bookmarks
+                                </Text>
+                            </View>
+                        </View>
+
+                        <SearchInput />
+                    </View>
+                )}
+                ListEmptyComponent={() => (
+                    <EmptyState
+                        title="No Movies Found"
+                        subtitle="Add your first bookmark"
                     />
                 )}
             />

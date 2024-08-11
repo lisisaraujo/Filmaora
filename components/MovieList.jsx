@@ -1,19 +1,22 @@
-const MoviesList = () => {
-    const { loading, error, data } = useQuery(GET_MOVIES);
+import React from 'react';
+import { View, Text, FlatList } from 'react-native';
+import { useMovies } from './context/MoviesContext';
+import MovieCard from './components/MovieCard';
 
-    if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-    if (error) return <Text>Error: {error.message}</Text>;
+const MoviesList = () => {
+    const { movies, error } = useMovies();
+
+    if (error) {
+        return <Text>Error loading movies: {error.message}</Text>;
+    }
 
     return (
-        <View>
-            {data.movies.map((movie) => (
-                <View key={movie.id}>
-                    <Text>{movie.title}</Text>
-                    <Text>{movie.overview}</Text>
-                </View>
-            ))}
-        </View>
+        <FlatList
+            data={movies}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <MovieCard movie={item} />}
+        />
     );
 };
 
-export default MoviesList
+export default MoviesList;

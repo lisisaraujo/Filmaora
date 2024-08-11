@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { BookmarksProvider } from './context/BookmarksContext';
+import { TMDB_API_KEY } from "@env";
+import { MoviesProvider } from './context/MoviesContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,14 +33,26 @@ const RootLayout = () => {
     return null;
   }
 
+
+
+  const TMDB_API_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}`;
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await movies();
+    setRefreshing(false);
+  };
+
   return (
-    <BookmarksProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-      </Stack>
-    </BookmarksProvider>
+    <MoviesProvider url={TMDB_API_URL}>
+      <BookmarksProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+        </Stack>
+      </BookmarksProvider>
+    </MoviesProvider>
   );
 };
 

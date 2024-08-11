@@ -1,90 +1,56 @@
-import React, { useState, useEffect, useContext, useMemo, useCallback } from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, Image, RefreshControl, Text, View } from "react-native";
+import { FlatList, Image, RefreshControl, Text, View, StyleSheet } from "react-native";
 import { images } from "../../constants";
 import MovieCard from "../../components/MovieCard";
 import EmptyState from "../../components/EmptyState";
 import SearchInput from "../../components/SearchInput";
-import { TMDB_API_KEY } from "@env";
-import { BookmarksContext } from '../context/BookmarksContext';
-
-const TMDB_API_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}`;
+import { useMovies } from '../context/MoviesContext';
 
 const Explore = () => {
-    const { bookmarks, addBookmark, removeBookmark } = useContext(BookmarksContext);
-    const [movies, setMovies] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const [error, setError] = useState(null);
+    const { movies, error } = useMovies();
 
-    const fetchMovies = useCallback(async () => {
-        try {
-            const response = await fetch(TMDB_API_URL);
-            const data = await response.json();
-            setMovies(data.results);
-        } catch (err) {
-            setError(err);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchMovies();
-    }, [fetchMovies]);
-
-    const onRefresh = useCallback(async () => {
+    const onRefresh = async () => {
         setRefreshing(true);
-        await fetchMovies();
+        await movies();
         setRefreshing(false);
-    }, [fetchMovies]);
+    };
+
+    if (error) {
+        return <Text style={styles.errorText}>Error loading movies: {error.message}</Text>;
+    }
 
     return (
-        <SafeAreaView className="bg-primary">
+        <SafeAreaView style={styles.safeArea}>
             <FlatList
                 data={movies}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <MovieCard
-                        key={item.id}
+                        id={item.id}
                         title={item.title}
-                        thumbnail={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                         releaseYear={item.release_date.split('-')[0]}
-                        onFavorite={() => addBookmark(item.id, item.title, item.poster_path)}
-                        onUnfavorite={() => removeBookmark(item.id)}
-                        isFavorite={bookmarks.some(b => b.movieId === item.id)}
+                        thumbnail={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                     />
                 )}
                 ListHeaderComponent={() => (
-                    <View className="flex my-6 px-4 space-y-6">
-                        <View className="flex justify-between items-start flex-row mb-6">
-                            <View>
-                                <Text className="font-pmedium text-sm text-gray-100">
-                                    Welcome
-                                </Text>
-                                <Text className="text-2xl font-psemibold text-white">
-                                    Filmaora
-                                </Text>
-                            </View>
-
-                            <View className="mt-1.5">
-                                <Image
-                                    source={images.logoSmall}
-                                    className="w-9 h-10"
-                                    resizeMode="contain"
-                                />
-                            </View>
+                    <View style={styles.headerContainer}>
+                        <View style={styles.headerRow}>
+                            <Text style={styles.headerTitle}>Filmaora</Text>
+                            <Image
+                                source={images.logoSmall}
+                                style={styles.logo}
+                                resizeMode="contain"
+                            />
                         </View>
-
-                        <SearchInput initialQuery="" />
-
-                        <View className="w-full flex-1 pt-5 pb-8">
-                            <Text className="text-lg font-pregular text-gray-100 mb-3">
-                                All Movies
-                            </Text>
-                        </View>
+                        <SearchInput />
                     </View>
                 )}
                 ListEmptyComponent={() => (
                     <EmptyState
-                        title="No Results."
+                        title="No Movies Found"
+                        subtitle="No movies available at the moment"
                     />
                 )}
                 refreshControl={
@@ -94,5 +60,36 @@ const Explore = () => {
         </SafeAreaView>
     );
 };
+
+const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#161622',
+    },
+    headerContainer: {
+        marginVertical: 16,
+        paddingHorizontal: 16,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+    logo: {
+        width: 36,
+        height: 40,
+    },
+    errorText: {
+        color: '#FF0000',
+        textAlign: 'center',
+        marginTop: 20,
+    },
+});
 
 export default Explore;
