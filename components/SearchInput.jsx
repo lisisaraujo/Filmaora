@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { View, TouchableOpacity, Image, TextInput, Alert, Text } from "react-native";
+import { useRouter } from "expo-router";
 import { icons } from "../constants";
 
-const SearchInput = ({ initialQuery, onQueryChange }) => {
+const SearchInput = ({ initialQuery }) => {
     const [query, setQuery] = useState(initialQuery || "");
+    const router = useRouter();
 
     const handleSearch = () => {
         if (query === "") {
@@ -12,12 +14,11 @@ const SearchInput = ({ initialQuery, onQueryChange }) => {
                 "Please input something to search results across database"
             );
         }
-        onQueryChange(query);
+        router.push(`/search/${query}`);
     };
 
     const handleClear = () => {
         setQuery("");
-        onQueryChange("");
     };
 
     return (

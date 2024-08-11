@@ -9,30 +9,22 @@ import { TMDB_API_KEY } from "@env";
 import { BookmarksContext } from '../context/BookmarksContext';
 
 const TMDB_API_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}`;
-const TMDB_SEARCH_URL = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=`;
 
 const Explore = () => {
     const { bookmarks, addBookmark, removeBookmark } = useContext(BookmarksContext);
     const [movies, setMovies] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
-    const [query, setQuery] = useState("");
-    const [searchPerformed, setSearchPerformed] = useState(false);
-
-    const fetchUrl = useMemo(() => {
-        return query ? `${TMDB_SEARCH_URL}${query}` : TMDB_API_URL;
-    }, [query]);
 
     const fetchMovies = useCallback(async () => {
         try {
-            const response = await fetch(fetchUrl);
+            const response = await fetch(TMDB_API_URL);
             const data = await response.json();
             setMovies(data.results);
-            setSearchPerformed(!!query);
         } catch (err) {
             setError(err);
         }
-    }, [fetchUrl, query]);
+    }, []);
 
     useEffect(() => {
         fetchMovies();
@@ -81,11 +73,11 @@ const Explore = () => {
                             </View>
                         </View>
 
-                        <SearchInput initialQuery={query} onQueryChange={setQuery} />
+                        <SearchInput initialQuery="" />
 
                         <View className="w-full flex-1 pt-5 pb-8">
                             <Text className="text-lg font-pregular text-gray-100 mb-3">
-                                {searchPerformed ? "Search Results" : "Latest Videos"}
+                                All Movies
                             </Text>
                         </View>
                     </View>
