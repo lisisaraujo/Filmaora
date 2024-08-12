@@ -37,11 +37,6 @@ const RootLayout = () => {
 
   const TMDB_API_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}`;
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await movies();
-    setRefreshing(false);
-  };
 
   return (
     <MoviesProvider url={TMDB_API_URL}>
@@ -50,6 +45,7 @@ const RootLayout = () => {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+          <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
         </Stack>
       </BookmarksProvider>
     </MoviesProvider>

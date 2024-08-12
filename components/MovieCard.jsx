@@ -2,9 +2,11 @@ import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { icons } from "../constants";
 import { BookmarksContext } from "../app/context/BookmarksContext";
+import { useRouter } from "expo-router";
 
 const MovieCard = ({ id, title, releaseYear, thumbnail }) => {
     const { addBookmark, removeBookmark, isBookmarked } = useContext(BookmarksContext);
+    const router = useRouter();
 
     const handleToggleBookmark = () => {
         if (isBookmarked(id)) {
@@ -14,8 +16,12 @@ const MovieCard = ({ id, title, releaseYear, thumbnail }) => {
         }
     };
 
+    const handleClick = () => {
+        router.push(`/details/${id}`);
+    };
+
     return (
-        <View style={styles.cardContainer}>
+        <TouchableOpacity onPress={handleClick} style={styles.cardContainer}>
             <View style={styles.infoRow}>
                 <View style={styles.textContainer}>
                     <Text style={styles.title} numberOfLines={1}>
@@ -37,17 +43,14 @@ const MovieCard = ({ id, title, releaseYear, thumbnail }) => {
                     />
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.thumbnailContainer}
-            >
+            <View style={styles.thumbnailContainer}>
                 <Image
                     source={{ uri: thumbnail }}
                     style={styles.thumbnail}
                     resizeMode="cover"
                 />
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableOpacity>
     );
 };
 
