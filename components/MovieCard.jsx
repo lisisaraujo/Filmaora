@@ -17,6 +17,7 @@ const MovieCard = ({ id, title, releaseYear, thumbnail }) => {
     };
 
     const handleClick = () => {
+        console.log(id)
         router.push(`/details/${id}`);
     };
 

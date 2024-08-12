@@ -6,6 +6,7 @@ const MoviesContext = createContext();
 export const MoviesProvider = ({ children }) => {
     const [movies, setMovies] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
+    const [movieDetails, setMovieDetails] = useState(null);
     const [cache, setCache] = useState({});
     const [error, setError] = useState(null);
 
@@ -42,12 +43,34 @@ export const MoviesProvider = ({ children }) => {
         }
     };
 
+    const fetchMovieDetails = async (id) => {
+        if (!id) {
+            setMovieDetails("No movie found.");
+            return;
+        }
+
+        if (cache[id]) {
+            setMovieDetails(cache[id]);
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}`);
+            const data = await response.json();
+            setMovieDetails(data || null);
+            setCache(prevCache => ({ ...prevCache, [id]: data }));
+        } catch (error) {
+            console.error('Error fetching movie details:', error);
+            setError(error);
+        }
+    };
+
     useEffect(() => {
         fetchMovies();
     }, []);
 
     return (
-        <MoviesContext.Provider value={{ movies, searchResults, fetchSearchResults, error }}>
+        <MoviesContext.Provider value={{ movies, searchResults, movieDetails, fetchSearchResults, fetchMovieDetails, error }}>
             {children}
         </MoviesContext.Provider>
     );

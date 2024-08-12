@@ -3,11 +3,11 @@ import { useLocalSearchParams } from "expo-router";
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import MovieCard from "../../../components/MovieCard";
-import SearchInput from "../../../components/SearchInput";
-import EmptyState from "../../../components/EmptyState";
-import { icons } from "../../../constants";
-import { useMovies } from '../../context/MoviesContext';
+import MovieCard from "../../components/MovieCard";
+import SearchInput from "../../components/SearchInput";
+import EmptyState from "../../components/EmptyState";
+import { icons } from "../../constants";
+import { useMovies } from '../context/MoviesContext';
 
 const Search = () => {
     const { query } = useLocalSearchParams();
